@@ -131,6 +131,8 @@ REST_FRAMEWORK = {
 
 REST_USE_JWT = True
 
+
+
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
 )
