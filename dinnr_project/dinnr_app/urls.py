@@ -1,7 +1,11 @@
-from django.urls import path
-from .views import current_user, UserList
+from django.conf.urls import url, include
+from rest_framework import routers
+from dinnr_app.views import UserViewSet
+
+router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
 
 urlpatterns = [
-    path('current_user/', current_user),
-    path('users/', UserList.as_view()),
+    url(r'', include(router.urls)),
+    url(r'auth/', include('rest_auth.urls')),
 ]
