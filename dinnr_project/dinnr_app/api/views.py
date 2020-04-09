@@ -50,7 +50,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-class FriendRequestView(generics.RetrieveUpdateDestroyAPIView):
+class FriendRequestView(generics.ListCreateAPIView):
     serializer_class = FriendRequestSerializer
     permission_classes = [
         permissions.AllowAny
