@@ -64,21 +64,6 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         serializer.save(user=self.request.user)
 
 
-class MultipleFieldLookupMixin(object):
-    """
-    Apply this mixin to any view or viewset to get multiple field filtering
-    based on a `lookup_fields` attribute, instead of the default single field filtering.
-    """
-    def get_object(self):
-        queryset = self.get_queryset()             # Get the base queryset
-        queryset = self.filter_queryset(queryset)  # Apply any filter backends
-        filter = {}
-        for field in self.lookup_fields:
-            if self.kwargs[field]: # Ignore empty fields.
-                filter[field] = self.kwargs[field]
-        obj = get_object_or_404(queryset, **filter)  # Lookup the object
-        self.check_object_permissions(self.request, obj)
-        return obj
 
 class UserFriendRequests(generics.ListAPIView):
     serializer_class = FriendRequestSerializer
@@ -104,8 +89,6 @@ class FriendRequestView(generics.ListCreateAPIView):
     def get_queryset(self):
         return FriendRequest.objects.all()
     
-    # def perform_create(self, serializer):
-    #     serializer.save(to_user=self.request.user)
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -117,60 +100,3 @@ class FriendRequestView(generics.ListCreateAPIView):
         self.check_object_permissions(self.request, obj)
         return obj
 
-
-class AllUsers(generics.RetrieveAPIView):
-    '''
-        Used to get list of all USERPROFILES.
-    '''
-    serializer_class = UserProfileSerializer
-
-
-class UpdateUserData(generics.RetrieveUpdateDestroyAPIView):
-    '''
-        RETURNS ALL USER DATA!!
-        1. Get User and matching UserProfile data
-        2. Serialize
-        3. return json
-    '''
-    #serializer_class = UserProfileSerializer
-    permissions_classes = [
-        permissions.IsAuthenticated
-    ]
-
-    def get(self, request, *args, **kwargs):
-        user_data = User.objects.all()
-        profile_data = UserProfile.objects.all()
-
-        user_list = list(user_data)
-        profile_list = list(profile_data)
-
-        combined = user_list + profile_list
-
-        serializer = UserAccountSerializer(combined)
-        return Response(serializer.data)
-
-    
-
-    # print(serializer)
-
-    # 
-
-
-
-'''
-def edit_data(request, user_id):
-        user_data = User.objects.get(id=user_id)
-        profile_data = UserProfile.object.get(id=user_id)
-
-        user_list = list(user_data)
-        profile_list = list(profile_data)
-
-        combined = user_list + profile_list
-
-        serializer = UserAccountSerializer(combined)
-
-        print serializer
-
-        return Response(serializer.data)
-
-'''
