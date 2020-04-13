@@ -100,3 +100,15 @@ class FriendRequestView(generics.ListCreateAPIView):
         self.check_object_permissions(self.request, obj)
         return obj
 
+
+class ProfilesView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permissions_classes = [
+        permissions.AllowAny
+    ]
+
+    def get_queryset(self):
+        return User.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save()
