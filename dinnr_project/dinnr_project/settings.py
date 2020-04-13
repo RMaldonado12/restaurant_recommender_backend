@@ -70,6 +70,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'dinnr',
+        'PASSWORD': 'aspire',
     }
 }
 
@@ -121,6 +122,8 @@ REST_FRAMEWORK = {
     )
 }
 
+
+# AUTH_USER_MODEL = 'dinnr_app.User'
 
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',

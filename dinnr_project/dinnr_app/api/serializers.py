@@ -33,10 +33,31 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserProfile
-        fields = ('user','first_name','last_name','email','phone_number','friends')
+        fields = ('user', 'phone_number', 'friends')
 
 class FriendRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FriendRequest
-        fields = ('to_user', 'from_user', 'timestamp')
+        fields = ('to_user', 'from_user', 'timestamp', 'accepted_status')
+
+
+class UserDetailSerializer(object):
+    def __init__(self, user):
+        self.user = user
+
+    @property
+    def user_detail(self):
+        return {
+            'id': self.user.id,
+            'username': self.user.username,
+            'first_name': self.user.first_name,
+            'last_name': self.user.last_name,
+            'email': self.user.email
+        }
+    
+
+class UserAccountSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        fields = ('id','username','email','first_name','last_name','password', 'phone_number', 'friends')
