@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserSignupView, LoginView, UserView, UserProfileView, FriendRequestView, ProfilesView, UserCreateFriendRequest
+from .views import UserSignupView, LoginView, UserView, UserProfileView, FriendRequestView, ProfilesView, UserCreateFriendRequest, SessionView
 from . import views
 from knox import views as knox_views
 
@@ -26,6 +26,10 @@ urlpatterns = [
     path('api/auth/friends/', FriendRequestView.as_view()),
     path('api/auth/friends/<int:user_pk>/', FriendRequestView.as_view()),
     # path('api/auth/friends/<int:user_pk>/', UserFriendRequests.as_view(), name='friendrequests'),
+
+    path('api/auth/session/', SessionView.as_view(), name='session'),
+    path('api/auth/session/<int:user_pk>/', SessionView.as_view(), name='session'),
+    # path('api/auth/restList/<int:user_pk>/', views.start_new_session, name='new_session'),
 
  
     path('api/auth', include('knox.urls')),

@@ -3,12 +3,12 @@ from rest_framework.response import Response
 from knox.models import AuthToken
 
 from django.contrib.auth.models import User
-from dinnr_app.models import UserProfile, FriendRequest
-from .serializers import UserSerializer, UserSignupSerializer, LoginSerializer, UserProfileSerializer, FriendRequestSerializer, UserDetailSerializer, UserAccountSerializer, CustomFriendRequestSerializer
+from dinnr_app.models import UserProfile, FriendRequest, Session
+from .serializers import UserSerializer, UserSignupSerializer, LoginSerializer, UserProfileSerializer, FriendRequestSerializer, UserDetailSerializer, UserAccountSerializer, CustomFriendRequestSerializer, SessionSerializer
 
 
 from django.http import JsonResponse
-
+from django.views.decorators.csrf import csrf_exempt
 
 
 class UserSignupView(generics.GenericAPIView):
@@ -104,7 +104,6 @@ class FriendRequestView(generics.GenericAPIView,
                 return self.create(request)
         if (request.data['accepted_status'] == 'true'):
             # shhhhhh
-            import pdb; pdb.set_trace()
             to_user, from_user = from_user, to_user
             the_object = FriendRequest.objects.filter(to_user=to_user, from_user=from_user)[0]
             FriendRequest.objects.get(id=the_object.id).delete()
@@ -176,16 +175,12 @@ def makeFriendRequest(request, from_user_pk, to_user_pk):
         print('Already a request in database')
         requests_made = FriendRequest.objects.filter(from_user=from_user.id)
         serialized = CustomFriendRequestSerializer(requests_made).all_requests
-        import pdb;pdb.set_trace()
         return JsonResponse(data = serialized, status=200)
 
 class HandleFriendRequests(generics.RetrieveUpdateDestroyAPIView):
     ## The from_user_pk and to_user_pk are from the url..
     def __init__(self, from_user_pk, to_user_pk):
         self.friend_request = FriendRequests.objects.filter(to_user=to_user_pk, from_user=from_user_pk)
-
-    
-    
 
 
 
@@ -200,3 +195,54 @@ class ProfilesView(generics.ListAPIView):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+
+
+
+
+class SessionView(generics.GenericAPIView, mixins.CreateModelMixin, mixins.ListModelMixin,):
+    serializer_class = SessionSerializer
+    queryset = Session.objects.all()
+
+
+    def get(self, request, user_pk=None):
+        if user_pk:
+            queryset = Session.objects.filter(user_two=user_pk)
+            self.queryset = queryset
+            return self.list(request)
+        else:
+            return self.list(request)
+
+
+    def post(self, request, user_pk=None):
+        user_one = request.data['user_one']
+        user_two = request.data['user_two']
+        user_likes = request.data['user_likes']
+        all_resteraunts = request.data['apiData']
+        zipcode = request.data['zipcode']
+
+        user_one = User.objects.get(id=user_one)
+        user_two = User.objects.get(id=user_two)
+        import pdb; pdb.set_trace()
+        # Is there already a session for these two users?
+        testOne = Session.objects.filter(user_one=user_one, user_two=user_two).count()
+        testTwo = Session.objects.filter(user_one=user_two, user_two=user_one).count()
+        
+        if (testOne+testTwo == 0):
+            # Create a new session
+            Session.objects.create(user_one=user_one, user_two=user_two,user_likes=user_likes, all_resteraunts=all_resteraunts, zipcode=zipcode)
+
+        
+        return self.list(request)
+
+
+
+
+# @csrf_exempt
+# def start_new_session(request):
+#     if request.method == 'POST':
+#         form = RestaurantSwipes(request.POST)
+#         import pdb; pdb.set_trace()
+
+

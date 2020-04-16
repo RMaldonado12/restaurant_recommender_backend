@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from dinnr_app.models import User, UserProfile, FriendRequest
+from dinnr_app.models import User, UserProfile, FriendRequest, Session
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from builtins import object
@@ -80,3 +80,11 @@ class UserAccountSerializer(serializers.ModelSerializer):
     
     class Meta:
         fields = ('id','username','email','first_name','last_name','password', 'phone_number', 'friends')
+
+
+class SessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ('user_one', 'user_two', 'user_likes', 'all_resteraunts', 'zipcode', 'match', 'is_active')
+
+    
